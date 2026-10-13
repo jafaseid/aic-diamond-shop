@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daldala Koo | Online Shop</title>
+  <style>
+    :root { --green: #123c32; --accent: #16865b; --bg: #f4f6f8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; color: #17211d; background: var(--bg); }
+    header { background: var(--green); color: white; padding: 26px 16px; text-align: center; }
+    header h1 { margin: 0 0 8px; }
+    nav { background: #0c2d25; display: flex; justify-content: center; gap: 24px; padding: 12px; flex-wrap: wrap; }
+    nav a { color: white; text-decoration: none; font-weight: bold; }
+    main { max-width: 1050px; margin: 28px auto; padding: 0 16px; }
+    .intro { text-align: center; margin-bottom: 28px; }
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+    .product { background: white; padding: 18px; border-radius: 12px; box-shadow: 0 3px 12px #0000000d; text-align: center; }
+    .product img { width: 100%; max-width: 300px; height: 180px; object-fit: cover; border-radius: 8px; background: #e8eeeb; }
+    .price { font-weight: bold; color: var(--green); }
+    button { background: var(--accent); color: white; border: 0; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    button:hover { filter: brightness(.92); }
+    #cart, #contact { background: white; margin-top: 24px; padding: 20px; border-radius: 12px; }
+    #cart-items { padding-left: 22px; }
+    .cart-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0; }
+    .remove { background: #b42318; padding: 6px 10px; }
+    footer { text-align: center; padding: 24px 16px; color: #58635d; }
+    @media (max-width: 480px) { nav { gap: 14px; } .cart-row { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Daldala Koo</h1>
+    <p>Baga gara mana daldalaa keenya dhuftan!</p>
+  </header>
+
+  <nav>
+    <a href="#home">Jalqaba</a>
+    <a href="#products">Meeshaalee</a>
+    <a href="#cart">Borsaa (<span id="cart-count">0</span>)</a>
+    <a href="#contact">Nu qunnamaa</a>
+  </nav>
+
+  <main>
+    <section id="home" class="intro">
+      <h2>Meeshaalee keessan as irraa filadhaa</h2>
+      <p>Fakkeenya online shop Afaan Oromoo — maqaa, gatii fi suuraa meeshaalee keessanii booda jijjiiruu dandeessu.</p>
+    </section>
+
+    <section id="products">
+      <h2>Meeshaalee Gurgurtaa</h2>
+      <div class="products">
+        <article class="product">
+          <img src="https://placehold.co/600x400?text=Meeshaa+1" alt="Suuraa meeshaa tokkoffaa">
+          <h3>Meeshaa Tokkoffaa</h3>
+          <p class="price">1,000 Birr</p>
+          <button onclick="addToCart('Meeshaa Tokkoffaa', 1000)">Borsaa irratti dabali</button>
+        </article>
+
+        <article class="product">
+          <img src="https://placehold.co/600x400?text=Meeshaa+2" alt="Suuraa meeshaa lammaffaa">
+          <h3>Meeshaa Lammaffaa</h3>
+          <p class="price">1,500 Birr</p>
+          <button onclick="addToCart('Meeshaa Lammaffaa', 1500)">Borsaa irratti dabali</button>
+        </article>
+
+        <article class="product">
+          <img src="https://placehold.co/600x400?text=Meeshaa+3" alt="Suuraa meeshaa sadaffaa">
+          <h3>Meeshaa Sadaffaa</h3>
+          <p class="price">2,000 Birr</p>
+          <button onclick="addToCart('Meeshaa Sadaffaa', 2000)">Borsaa irratti dabali</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="cart">
+      <h2>Borsaa Bittaa</h2>
+      <p id="empty-cart">Amma homaa hin filanne.</p>
+      <ul id="cart-items"></ul>
+      <p><strong>Waliigala: <span id="total">0</span> Birr</strong></p>
+      <button onclick="placeOrder()">Ajaja koo qopheessi</button>
+      <p id="order-message" aria-live="polite"></p>
+    </section>
+
+    <section id="contact">
+      <h2>Nu Qunnamaa</h2>
+      <p>Email: daldala@example.com</p>
+      <p>Bilbila: Lakkoofsa bilbilaa kee asitti galchi.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Daldala Koo. Mirgi hundi eegamaadha.</p>
+    <p>Fakkeenya barnootaa qofa — ajajni ykn kaffaltiin dhugaa hin ergamu.</p>
+  </footer>
+
+  <script>
+    const cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      renderCart();
+      document.getElementById('order-message').textContent = '';
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-items');
+      const empty = document.getElementById('empty-cart');
+      list.innerHTML = '';
+
+      empty.style.display = cart.length ? 'none' : 'block';
+
+      cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'cart-row';
+
+        const label = document.createElement('span');
+        label.textContent = item.name + ' — ' + item.price.toLocaleString() + ' Birr';
+
+        const remove = document.createElement('button');
+        remove.className = 'remove';
+        remove.textContent = 'Haqi';
+        remove.setAttribute('aria-label', item.name + ' borsaa keessaa haqi');
+        remove.addEventListener('click', () => removeFromCart(index));
+
+        li.append(label, remove);
+        list.appendChild(li);
+      });
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      document.getElementById('total').textContent = total.toLocaleString();
+      document.getElementById('cart-count').textContent = cart.length;
+    }
+
+    function placeOrder() {
+      const message = document.getElementById('order-message');
+      if (cart.length === 0) {
+        message.textContent = 'Maaloo, jalqaba meeshaa borsaa irratti dabali.';
+        return;
+      }
+      message.textContent = 'Fakkeenyaaf: meeshaa ' + cart.length +
+        ' filatteetta. Ajaja dhugaa erguuf backend ykn WhatsApp sirreessuu qabna.';
+    }
+  </script>
+</body>
+</html>
